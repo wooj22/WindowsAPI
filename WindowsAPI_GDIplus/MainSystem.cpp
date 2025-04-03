@@ -5,10 +5,8 @@
 
 #pragma comment(lib, "gdiplus.lib")
 
-
+// Window Data
 LPCTSTR g_szClassName = TEXT("윈도우 클래스 이름");
-
-// Window Size
 int g_width = 1024;
 int g_height = 768;
 
@@ -51,7 +49,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 	char szPath[MAX_PATH] = { 0, };
 	::GetCurrentDirectoryA(MAX_PATH, szPath);
 
-	// WNDCLASS 정의
+	// WNDCLASS 등록
 	WNDCLASS wc = { 0 };
 	wc.lpfnWndProc = Message::WndProc;
 	wc.hInstance = hInstance;
@@ -60,10 +58,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 	wc.hCursor = LoadCursor(NULL, IDC_ARROW);
 	wc.hIcon = LoadIcon(NULL, IDI_APPLICATION);
 
-	// RegisterClass : WNDCLASS 등록
 	RegisterClass(&wc);
-
-	// 창 크기 조절
 	RECT rcClient = { 0, 0, (LONG)g_width, (LONG)g_height };
 	AdjustWindowRect(&rcClient, WS_OVERLAPPEDWINDOW, FALSE);
 
@@ -76,11 +71,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 		rcClient.right - rcClient.left, rcClient.bottom - rcClient.top,
 		NULL, NULL, hInstance, NULL);
 
-
-	// Show
 	ShowWindow(hwnd, nCmdShow);
-
-	// WM_PAINT 이벤트 생성
 	UpdateWindow(hwnd);
 
 	// 더블 버퍼링 초기화
@@ -93,8 +84,6 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 	ULONG_PTR g_GdiPlusToken;
 	Gdiplus::GdiplusStartupInput gsi;
 	Gdiplus::GdiplusStartup(&g_GdiPlusToken, &gsi, nullptr);
-
-	// g_BackBufferDC와 호환되는 그래픽 객체 생성
 	Gdiplus::Graphics* g_pBackBufferGraphics = Gdiplus::Graphics::FromHDC(g_BackBufferDC);
 
 	// 이미지 로드
