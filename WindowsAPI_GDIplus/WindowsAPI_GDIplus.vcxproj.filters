@@ -15,7 +15,10 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="WindowsAPI_GDIplus.cpp">
+    <ClCompile Include="description.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="AnimationDraw.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
   </ItemGroup>
