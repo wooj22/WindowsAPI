@@ -52,9 +52,11 @@ float animationCycle = 0.17f;
 int animationIndex = 0;
 
 
-/*----------------------- Funtions -------------------------*/
-	/// 콘솔창 생성
-void InitConsole()
+
+
+/*----------------------- Console Funtion Funtions -------------------------*/
+/// 콘솔창 생성
+inline void InitConsole()
 {
 	AllocConsole();
 	FILE* fp;
@@ -64,56 +66,59 @@ void InitConsole()
 }
 
 /// 콘솔창 해제
-void UninitConsole()
+inline void UninitConsole()
 {
 	fclose(stdout);
 	FreeConsole();
 }
 
-/// 애니메이션
-void PlayerIdleAnimation() {
-	if (animationIndex > IDLE_SIZE-1 || playerState != prePlayerState) 
-		animationIndex = 0;
+
+
+
+/*----------------------- Animation Funtions -------------------------*/
+/// Player Idle Animation
+inline void PlayerIdleAnimation() {
+	if (animationIndex > IDLE_SIZE-1) animationIndex = 0;
 
 	g_pBackBufferGraphics->DrawImage(playerIdleFrames[animationIndex],
 		g_width / 2 - (int)playerIdleFrames[animationIndex]->GetWidth() / 2,
 		g_height / 2 - (int)playerIdleFrames[animationIndex]->GetHeight() / 2);
 
-	printf("IDLE - currentIndex [%d]\n", animationIndex);
 	prePlayerState = playerState;
-
-	animationIndex++;
+	printf("IDLE - currentIndex [%d]\n", animationIndex);
 }
 
-void PlayerWalkAnimation() {
-	if (animationIndex > WALK_SIZE-1 ||playerState != prePlayerState)
-		animationIndex = 0;
+/// Player Walk Animation
+inline void PlayerWalkAnimation() {
+	if (animationIndex > WALK_SIZE - 1)	animationIndex = 0;
 	
 	g_pBackBufferGraphics->DrawImage(playerWalkFrames[animationIndex],
 		g_width / 2 - (int)playerWalkFrames[animationIndex]->GetWidth() / 2,
 		g_height / 2 - (int)playerWalkFrames[animationIndex]->GetHeight() / 2);
 
-	printf("WALK - currentIndex [%d]\n", animationIndex);
 	prePlayerState = playerState;
-
-	animationIndex++;
+	printf("WALK - currentIndex [%d]\n", animationIndex);
 }
 
-void PlayerAttackAnimation() {
-	if (playerState != prePlayerState) animationIndex = 0;
-
+/// Player Attack Animation
+inline void PlayerAttackAnimation() {
 	g_pBackBufferGraphics->DrawImage(playerAttackFrames[animationIndex],
 		g_width / 2 - (int)playerAttackFrames[animationIndex]->GetWidth() / 2,
 		g_height / 2 - (int)playerAttackFrames[animationIndex]->GetHeight() / 2);
 
-	printf("ATTACK - currentIndex [%d]\n", animationIndex);
 	prePlayerState = playerState;
+	printf("ATTACK - currentIndex [%d]\n", animationIndex);
 
-	animationIndex++;
+	// 1회 재생 후 IDLE로 전환
 	if (animationIndex == ATTACK_SIZE - 1) playerState = IDLE;
 }
 
-void Initalize(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow) {
+
+
+
+/*----------------------- GameManager Funtions -------------------------*/
+/// Initalize
+inline void Initalize(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow) {
 	// 콘솔창 생성
 	InitConsole();
 
@@ -178,7 +183,8 @@ void Initalize(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, in
 	}
 }
 
-void Update() {
+/// Update
+inline void Update() {
 	// message 처리
 	if (PeekMessage(&msg, NULL, 0, 0, PM_REMOVE))
 	{
@@ -196,41 +202,51 @@ void Update() {
 	if (Input::IsKeyPressed('1')) {
 		prePlayerState = playerState;
 		playerState = IDLE;
+		animationIndex = 0;
 	}
 	if (Input::IsKeyPressed('2')) {
 		prePlayerState = playerState;
 		playerState = WALK;
+		animationIndex = 0;
 	}
 	if (Input::IsKeyPressed('3')) {
 		prePlayerState = playerState;
 		playerState = ATTACK;
+		animationIndex = 0;
+	}
+
+	// Animation Freame Update
+	if (animationTimer >= animationCycle) {
+		animationIndex++;
+		animationTimer = 0.0f;
 	}
 }
 
-void Render() {
-	// player animation
-	if (animationTimer >= animationCycle) {
-		PatBlt(g_BackBufferDC, 0, 0, g_width, g_height, BLACKNESS);
-		switch (playerState)
-		{
-		case IDLE:
-			PlayerIdleAnimation();
-			break;
-		case WALK:
-			PlayerWalkAnimation();
-			break;
-		case ATTACK:
-			PlayerAttackAnimation();
-			break;
-		default:
-			break;
-		}
-		animationTimer = 0.0f;
+/// Render
+inline void Render() {
+	PatBlt(g_BackBufferDC, 0, 0, g_width, g_height, BLACKNESS);
+
+	// Animation Draw
+	switch (playerState)
+	{
+	case IDLE:
+		PlayerIdleAnimation();
+		break;
+	case WALK:
+		PlayerWalkAnimation();
+		break;
+	case ATTACK:
+		PlayerAttackAnimation();
+		break;
+	default:
+		break;
 	}
+
 	BitBlt(g_FrontBufferDC, 0, 0, g_width, g_height, g_BackBufferDC, 0, 0, SRCCOPY);
 }
 
-void Clear() {
+/// Clear
+inline void Clear() {
 	// GDI+ 해제
 	delete* playerIdleFrames;
 	delete* playerWalkFrames;
@@ -246,16 +262,18 @@ void Clear() {
 	UninitConsole();
 }
 
-/*-------------------------- Main ----------------------------*/
+
+
+/*-------------------------- Main Program ----------------------------*/
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow)
 {
 	Initalize(hInstance, hPrevInstance, lpCmdLine, nCmdShow);
 
-	// 타이머 초기화
 	Time::Initialize();
 	animationTimer = 0.0f;
 	animationIndex = 0;
 
+	// Main Loop
 	while (true)
 	{
 		Update();
