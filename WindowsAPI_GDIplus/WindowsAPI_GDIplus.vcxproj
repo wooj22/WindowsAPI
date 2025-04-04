@@ -127,11 +127,16 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="MainSystem.cpp" />
+    <ClCompile Include="Character.cpp" />
+    <ClCompile Include="GameManager.cpp" />
+    <ClCompile Include="Input.cpp" />
     <ClCompile Include="Message.cpp" />
     <ClCompile Include="Time.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Character.h" />
+    <ClInclude Include="GameManager.h" />
+    <ClInclude Include="Input.h" />
     <ClInclude Include="Message.h" />
     <ClInclude Include="Time.h" />
   </ItemGroup>
