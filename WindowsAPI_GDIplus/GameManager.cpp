@@ -51,7 +51,8 @@ float animationTimer = 0.0f;
 float animationCycle = 0.17f;
 int animationIndex = 0;
 
-
+// Loop Flag
+bool g_bLoop = true;
 
 
 /*----------------------- Console Funtion Funtions -------------------------*/
@@ -188,7 +189,7 @@ inline void Update() {
 	// message Ã³¸®
 	if (PeekMessage(&msg, NULL, 0, 0, PM_REMOVE))
 	{
-		if (msg.message == WM_QUIT)	// break;
+		if (msg.message == WM_QUIT)	g_bLoop = false;
 		TranslateMessage(&msg);
 		DispatchMessage(&msg);
 	}
@@ -274,7 +275,7 @@ int WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, _
 	animationIndex = 0;
 
 	// Main Loop
-	while (true)
+	while (g_bLoop)
 	{
 		Update();
 		Render();
