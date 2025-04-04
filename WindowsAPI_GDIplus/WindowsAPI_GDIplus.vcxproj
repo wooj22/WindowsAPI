@@ -129,16 +129,17 @@
   <ItemGroup>
     <ClCompile Include="Character.cpp" />
     <ClCompile Include="GameManager.cpp" />
-    <ClCompile Include="Input.cpp" />
     <ClCompile Include="Message.cpp" />
-    <ClCompile Include="Time.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Character.h" />
     <ClInclude Include="GameManager.h" />
-    <ClInclude Include="Input.h" />
     <ClInclude Include="Message.h" />
-    <ClInclude Include="Time.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Module\Module.vcxproj">
+      <Project>{caa942d5-3def-4049-a74c-77299cd97823}</Project>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

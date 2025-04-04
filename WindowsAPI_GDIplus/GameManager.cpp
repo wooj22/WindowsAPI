@@ -3,8 +3,9 @@
 #include <gdiplus.h>
 #include "GameManager.h"
 #include "Message.h"
-#include "Time.h"
-#include "Input.h"
+#include "../Module/Time.h"
+#include "../Module/Input.h"
+#include "../Module/ConsoleRenderer.h"
 #pragma comment(lib, "gdiplus.lib")
 
 /*----------------------- global -------------------------*/
