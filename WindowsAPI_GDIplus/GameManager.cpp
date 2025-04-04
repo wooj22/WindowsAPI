@@ -97,9 +97,8 @@ void PlayerWalkAnimation() {
 }
 
 void PlayerAttackAnimation() {
-	if (animationIndex > ATTACK_SIZE-1 || playerState != prePlayerState)
-		animationIndex = 0;
-	
+	if (playerState != prePlayerState) animationIndex = 0;
+
 	g_pBackBufferGraphics->DrawImage(playerAttack[animationIndex],
 		g_width / 2 - (int)playerAttack[animationIndex]->GetWidth() / 2,
 		g_height / 2 - (int)playerAttack[animationIndex]->GetHeight() / 2);
@@ -108,6 +107,7 @@ void PlayerAttackAnimation() {
 	prePlayerState = playerState;
 
 	animationIndex++;
+	if (animationIndex == ATTACK_SIZE - 1) playerState = IDLE;
 }
 
 
