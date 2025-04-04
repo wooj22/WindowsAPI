@@ -11,11 +11,10 @@
 /*----------------------- global -------------------------*/
 // Window Data
 LPCTSTR g_szClassName = TEXT("윈도우 클래스 이름");
+HWND hwnd;	   		 // Window Handle
+MSG msg;			 // Window Message
 int g_width = 1024;
 int g_height = 768;
-
-// Window Handle
-HWND g_hWnd;
 
 // HDC (Device Context) 
 HDC g_FrontBufferDC;
@@ -27,7 +26,10 @@ Gdiplus::Graphics* g_pBackBufferGraphics;
 // BITMAP
 HBITMAP g_BackBufferBitmap;
 
-// Player
+// GDI+ Token
+ULONG_PTR g_GdiPlusToken;
+
+// Character
 enum CharacterState
 {
 	IDLE,
@@ -42,9 +44,9 @@ const int IDLE_SIZE = 4;
 const int WALK_SIZE = 6;
 const int ATTACK_SIZE = 8;
 
-Gdiplus::Bitmap* playerIdle[IDLE_SIZE];
-Gdiplus::Bitmap* playerWalk[WALK_SIZE];
-Gdiplus::Bitmap* playerAttack[ATTACK_SIZE];
+Gdiplus::Bitmap* playerIdleFrames[IDLE_SIZE];
+Gdiplus::Bitmap* playerWalkFrames[WALK_SIZE];
+Gdiplus::Bitmap* playerAttackFrames[ATTACK_SIZE];
 float animationTimer = 0.0f;
 float animationCycle = 0.17f;
 int animationIndex = 0;
@@ -73,9 +75,9 @@ void PlayerIdleAnimation() {
 	if (animationIndex > IDLE_SIZE-1 || playerState != prePlayerState) 
 		animationIndex = 0;
 
-	g_pBackBufferGraphics->DrawImage(playerIdle[animationIndex],
-		g_width / 2 - (int)playerIdle[animationIndex]->GetWidth() / 2,
-		g_height / 2 - (int)playerIdle[animationIndex]->GetHeight() / 2);
+	g_pBackBufferGraphics->DrawImage(playerIdleFrames[animationIndex],
+		g_width / 2 - (int)playerIdleFrames[animationIndex]->GetWidth() / 2,
+		g_height / 2 - (int)playerIdleFrames[animationIndex]->GetHeight() / 2);
 
 	printf("IDLE - currentIndex [%d]\n", animationIndex);
 	prePlayerState = playerState;
@@ -87,9 +89,9 @@ void PlayerWalkAnimation() {
 	if (animationIndex > WALK_SIZE-1 ||playerState != prePlayerState)
 		animationIndex = 0;
 	
-	g_pBackBufferGraphics->DrawImage(playerWalk[animationIndex],
-		g_width / 2 - (int)playerWalk[animationIndex]->GetWidth() / 2,
-		g_height / 2 - (int)playerWalk[animationIndex]->GetHeight() / 2);
+	g_pBackBufferGraphics->DrawImage(playerWalkFrames[animationIndex],
+		g_width / 2 - (int)playerWalkFrames[animationIndex]->GetWidth() / 2,
+		g_height / 2 - (int)playerWalkFrames[animationIndex]->GetHeight() / 2);
 
 	printf("WALK - currentIndex [%d]\n", animationIndex);
 	prePlayerState = playerState;
@@ -100,9 +102,9 @@ void PlayerWalkAnimation() {
 void PlayerAttackAnimation() {
 	if (playerState != prePlayerState) animationIndex = 0;
 
-	g_pBackBufferGraphics->DrawImage(playerAttack[animationIndex],
-		g_width / 2 - (int)playerAttack[animationIndex]->GetWidth() / 2,
-		g_height / 2 - (int)playerAttack[animationIndex]->GetHeight() / 2);
+	g_pBackBufferGraphics->DrawImage(playerAttackFrames[animationIndex],
+		g_width / 2 - (int)playerAttackFrames[animationIndex]->GetWidth() / 2,
+		g_height / 2 - (int)playerAttackFrames[animationIndex]->GetHeight() / 2);
 
 	printf("ATTACK - currentIndex [%d]\n", animationIndex);
 	prePlayerState = playerState;
@@ -111,10 +113,7 @@ void PlayerAttackAnimation() {
 	if (animationIndex == ATTACK_SIZE - 1) playerState = IDLE;
 }
 
-
-/*-------------------------- Main ----------------------------*/
-int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow)
-{
+void Initalize(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow) {
 	// 콘솔창 생성
 	InitConsole();
 
@@ -136,7 +135,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 	AdjustWindowRect(&rcClient, WS_OVERLAPPEDWINDOW, FALSE);
 
 	// 윈도우 생성
-	HWND hwnd = CreateWindow(
+	hwnd = CreateWindow(
 		g_szClassName,
 		TEXT("GDL plus 애니메이션 과제중"),
 		WS_OVERLAPPEDWINDOW,
@@ -154,97 +153,88 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 	SelectObject(g_BackBufferDC, g_BackBufferBitmap);
 
 	// GDI+ 초기화
-	ULONG_PTR g_GdiPlusToken;
 	Gdiplus::GdiplusStartupInput gsi;
 	Gdiplus::GdiplusStartup(&g_GdiPlusToken, &gsi, nullptr);
 	g_pBackBufferGraphics = Gdiplus::Graphics::FromHDC(g_BackBufferDC);
 
 	// 이미지 로드
 	wchar_t filePath[256];
-
 	// Idle
 	for (int i = 0; i < IDLE_SIZE; ++i) {
 		swprintf_s(filePath, L"../Resource/PlayerAnimation/idle-%d.png", i + 1);
-		playerIdle[i] = new Gdiplus::Bitmap(filePath);
+		playerIdleFrames[i] = new Gdiplus::Bitmap(filePath);
 	}
 
 	// Walk
 	for (int i = 0; i < WALK_SIZE; ++i) {
 		swprintf_s(filePath, L"../Resource/PlayerAnimation/walk-%d.png", i + 1);
-		playerWalk[i] = new Gdiplus::Bitmap(filePath);
+		playerWalkFrames[i] = new Gdiplus::Bitmap(filePath);
 	}
 
 	// Attack
 	for (int i = 0; i < ATTACK_SIZE; ++i) {
 		swprintf_s(filePath, L"../Resource/PlayerAnimation/attack-A%d.png", i + 1);
-		playerAttack[i] = new Gdiplus::Bitmap(filePath);
+		playerAttackFrames[i] = new Gdiplus::Bitmap(filePath);
 	}
+}
 
-	// NonBlocking방식의 Game Loop
-	MSG msg;
-
-	// 루프 전 타이머 초기화
-	Time::Initialize();
-	animationTimer = 0.0f;
-	animationIndex = 0;
-	
-	while (true)
+void Update() {
+	// message 처리
+	if (PeekMessage(&msg, NULL, 0, 0, PM_REMOVE))
 	{
-		// updtate
-		Time::UpdateTime();
-		animationTimer += Time::GetDeltaTime();
-		Input::Update();
-
-		// message
-		if (PeekMessage(&msg, NULL, 0, 0, PM_REMOVE))
-		{
-			if (msg.message == WM_QUIT)
-				break;
-			TranslateMessage(&msg);
-			DispatchMessage(&msg);
-		}
-
-		// input
-		if (Input::IsKeyPressed('1')) {
-			prePlayerState = playerState;
-			playerState = IDLE;
-		}
-		if (Input::IsKeyPressed('2')) {
-			prePlayerState = playerState;
-			playerState = WALK;
-		}
-		if (Input::IsKeyPressed('3')) {
-			prePlayerState = playerState;
-			playerState = ATTACK;
-		}
-
-		// render
-		if (animationTimer >= animationCycle) {
-			PatBlt(g_BackBufferDC, 0, 0, g_width, g_height, BLACKNESS);
-			switch (playerState)
-			{
-			case IDLE:
-				PlayerIdleAnimation();
-				break;
-			case WALK:
-				PlayerWalkAnimation();
-				break;
-			case ATTACK:
-				PlayerAttackAnimation();
-				break;
-			default:
-				break;
-			}
-			animationTimer = 0.0f;
-		}
-
-		BitBlt(g_FrontBufferDC, 0, 0, g_width, g_height, g_BackBufferDC, 0, 0, SRCCOPY);
+		if (msg.message == WM_QUIT)	// break;
+		TranslateMessage(&msg);
+		DispatchMessage(&msg);
 	}
 
+	// time update
+	Time::UpdateTime();
+	animationTimer += Time::GetDeltaTime();
+	Input::Update();
+
+	// input 처리
+	if (Input::IsKeyPressed('1')) {
+		prePlayerState = playerState;
+		playerState = IDLE;
+	}
+	if (Input::IsKeyPressed('2')) {
+		prePlayerState = playerState;
+		playerState = WALK;
+	}
+	if (Input::IsKeyPressed('3')) {
+		prePlayerState = playerState;
+		playerState = ATTACK;
+	}
+}
+
+void Render() {
+	// player animation
+	if (animationTimer >= animationCycle) {
+		PatBlt(g_BackBufferDC, 0, 0, g_width, g_height, BLACKNESS);
+		switch (playerState)
+		{
+		case IDLE:
+			PlayerIdleAnimation();
+			break;
+		case WALK:
+			PlayerWalkAnimation();
+			break;
+		case ATTACK:
+			PlayerAttackAnimation();
+			break;
+		default:
+			break;
+		}
+		animationTimer = 0.0f;
+	}
+	BitBlt(g_FrontBufferDC, 0, 0, g_width, g_height, g_BackBufferDC, 0, 0, SRCCOPY);
+}
+
+void Clear() {
 	// GDI+ 해제
-	delete* playerIdle;
-	delete* playerWalk;
-	delete* playerAttack;
+	delete* playerIdleFrames;
+	delete* playerWalkFrames;
+	delete* playerAttackFrames;
 	delete g_pBackBufferGraphics;
 	Gdiplus::GdiplusShutdown(g_GdiPlusToken);
 
@@ -254,5 +244,24 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 
 	// 콘솔 출력 해제
 	UninitConsole();
+}
+
+/*-------------------------- Main ----------------------------*/
+int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow)
+{
+	Initalize(hInstance, hPrevInstance, lpCmdLine, nCmdShow);
+
+	// 타이머 초기화
+	Time::Initialize();
+	animationTimer = 0.0f;
+	animationIndex = 0;
+
+	while (true)
+	{
+		Update();
+		Render();
+	}
+
+	Clear();
 	return (int)msg.wParam;
 }
