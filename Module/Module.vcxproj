@@ -141,12 +141,14 @@
   <ItemGroup>
     <ClInclude Include="ConsoleRenderer.h" />
     <ClInclude Include="framework.h" />
+    <ClInclude Include="GDIRenderer.h" />
     <ClInclude Include="Input.h" />
     <ClInclude Include="pch.h" />
     <ClInclude Include="Time.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="ConsoleRenderer.cpp" />
+    <ClCompile Include="GDIRenderer.cpp" />
     <ClCompile Include="Input.cpp" />
     <ClCompile Include="pch.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>

@@ -6,7 +6,10 @@
 #include "../Module/Time.h"
 #include "../Module/Input.h"
 #include "../Module/ConsoleRenderer.h"
+#include "../Module/GDIRenderer.h"
 #pragma comment(lib, "gdiplus.lib")
+
+using namespace GDIRenderer;
 
 /*----------------------- global -------------------------*/
 // Window Data
@@ -28,6 +31,11 @@ HBITMAP g_BackBufferBitmap;
 
 // GDI+ Token
 ULONG_PTR g_GdiPlusToken;
+
+void Initalize();
+void Update();
+void Render();
+void Release();
 
 // Character
 enum CharacterState
