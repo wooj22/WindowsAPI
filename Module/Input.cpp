@@ -1,4 +1,5 @@
-﻿#include "framework.h"
+﻿#include "pch.h"
+#include "framework.h"
 #include "Input.h"
 
 namespace Input
