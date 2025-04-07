@@ -126,22 +126,22 @@ namespace GDIRenderer {
 		// Idle
 		for (int i = 0; i < IDLE_SIZE; ++i) {
 			swprintf_s(filePath, L"../Resource/PlayerAnimation/idle-%d.png", i + 1);
-			playerIdleFrames[i] = new Gdiplus::Bitmap(filePath);
-			//BitmapLoad(playerIdleFrames[i], filePath);
+			//playerIdleFrames[i] = new Gdiplus::Bitmap(filePath);
+			BitmapLoad(playerIdleFrames[i], filePath);
 		}
 
 		// Walk
 		for (int i = 0; i < WALK_SIZE; ++i) {
 			swprintf_s(filePath, L"../Resource/PlayerAnimation/walk-%d.png", i + 1);
-			playerWalkFrames[i] = new Gdiplus::Bitmap(filePath);
-			//BitmapLoad(playerWalkFrames[i], filePath);
+			//playerWalkFrames[i] = new Gdiplus::Bitmap(filePath);
+			BitmapLoad(playerWalkFrames[i], filePath);
 		}
 
 		// Attack
 		for (int i = 0; i < ATTACK_SIZE; ++i) {
 			swprintf_s(filePath, L"../Resource/PlayerAnimation/attack-A%d.png", i + 1);
-			playerAttackFrames[i] = new Gdiplus::Bitmap(filePath);
-			//BitmapLoad(playerAttackFrames[i], filePath);
+			//playerAttackFrames[i] = new Gdiplus::Bitmap(filePath);
+			BitmapLoad(playerAttackFrames[i], filePath);
 		}
 
 		// Animation ÃÊ±âÈ­
@@ -150,7 +150,7 @@ namespace GDIRenderer {
 	}
 
 	/// Image Load
-	void BitmapLoad(Gdiplus::Bitmap* bitmap, wchar_t* filePath) {
+	void BitmapLoad(Gdiplus::Bitmap*& bitmap, wchar_t* filePath) {
 		bitmap = new Gdiplus::Bitmap(filePath);
 	}
 

@@ -5,7 +5,7 @@
 namespace GDIRenderer {
 
 	void Initalize(HWND hwnd, int width, int height);
-	void BitmapLoad(Gdiplus::Bitmap* bitmap, wchar_t* filePath);
+	void BitmapLoad(Gdiplus::Bitmap*& bitmap, wchar_t* filePath);
 
 	void Update();
 
