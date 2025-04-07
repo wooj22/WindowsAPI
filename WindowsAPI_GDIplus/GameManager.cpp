@@ -18,26 +18,29 @@ int g_height = 768;
 // Loop Flag
 bool g_Loop = true;
 
+// Animation Data
 
-/// 콘솔창 생성
-inline void InitConsole()
-{
-	AllocConsole();
-	FILE* fp;
-	freopen_s(&fp, "CONOUT$", "w", stdout);
-	SetConsoleTitle(L"윈도우 메시지 콘솔 로그");
-	printf("콘솔 로그 시작...\n\n");
-}
-
-/// 콘솔창 해제
-inline void UninitConsole()
-{
-	fclose(stdout);
-	FreeConsole();
-}
 
 
 namespace GameManager {
+
+	/// 콘솔창 생성
+	inline void InitConsole()
+	{
+		AllocConsole();
+		FILE* fp;
+		freopen_s(&fp, "CONOUT$", "w", stdout);
+		SetConsoleTitle(L"윈도우 메시지 콘솔 로그");
+		printf("콘솔 로그 시작...\n\n");
+	}
+
+	/// 콘솔창 해제
+	inline void UninitConsole()
+	{
+		fclose(stdout);
+		FreeConsole();
+	}
+
 	/// Initalize
 	inline void Initalize(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow) {
 		// 콘솔창 생성
@@ -94,7 +97,9 @@ namespace GameManager {
 
 	/// Render
 	inline void Render() {
+		GDIRenderer::PaintingSquare(g_width, g_height);
 		GDIRenderer::Render(g_width, g_height);
+		GDIRenderer::DrawBackToFront(g_width, g_height);
 	}
 
 	/// Clear

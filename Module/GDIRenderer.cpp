@@ -5,6 +5,7 @@
 namespace GDIRenderer {
 	HDC g_FrontBufferDC;
 	HDC g_BackBufferDC;
+
 	Gdiplus::Graphics* g_pBackBufferGraphics;
 	HBITMAP g_BackBufferBitmap;
 	ULONG_PTR g_GdiPlusToken;
@@ -75,11 +76,11 @@ namespace GDIRenderer {
 
 
 	/// Renderer Initialize
-	void Initalize(HWND hwnd, int g_width, int g_height) {
+	void Initalize(HWND hwnd, int width, int height) {
 		// 더블 버퍼링 초기화
 		g_FrontBufferDC = GetDC(hwnd);
 		g_BackBufferDC = CreateCompatibleDC(g_FrontBufferDC);
-		g_BackBufferBitmap = CreateCompatibleBitmap(g_FrontBufferDC, g_width, g_height);
+		g_BackBufferBitmap = CreateCompatibleBitmap(g_FrontBufferDC, width, height);
 		SelectObject(g_BackBufferDC, g_BackBufferBitmap);
 
 		// GDI+ 초기화
@@ -92,24 +93,32 @@ namespace GDIRenderer {
 		// Idle
 		for (int i = 0; i < IDLE_SIZE; ++i) {
 			swprintf_s(filePath, L"../Resource/PlayerAnimation/idle-%d.png", i + 1);
-			playerIdleFrames[i] = new Gdiplus::Bitmap(filePath);
+			//playerIdleFrames[i] = new Gdiplus::Bitmap(filePath);
+			BitmapLoad(playerIdleFrames[i], filePath);
 		}
 
 		// Walk
 		for (int i = 0; i < WALK_SIZE; ++i) {
 			swprintf_s(filePath, L"../Resource/PlayerAnimation/walk-%d.png", i + 1);
-			playerWalkFrames[i] = new Gdiplus::Bitmap(filePath);
+			//playerWalkFrames[i] = new Gdiplus::Bitmap(filePath);
+			BitmapLoad(playerWalkFrames[i], filePath);
 		}
 
 		// Attack
 		for (int i = 0; i < ATTACK_SIZE; ++i) {
 			swprintf_s(filePath, L"../Resource/PlayerAnimation/attack-A%d.png", i + 1);
-			playerAttackFrames[i] = new Gdiplus::Bitmap(filePath);
+			//playerAttackFrames[i] = new Gdiplus::Bitmap(filePath);
+			BitmapLoad(playerAttackFrames[i], filePath);
 		}
 
 		// Animation 초기화
 		animationTimer = 0.0f;
 		animationIndex = 0;
+	}
+
+	/// Image Load
+	void BitmapLoad(Gdiplus::Bitmap* bitmap, wchar_t* filePath) {
+		playerIdleFrames[0] = new Gdiplus::Bitmap(filePath);
 	}
 
 	/// Renderer Update
@@ -140,25 +149,38 @@ namespace GDIRenderer {
 		}
 	}
 
+	/// Background용 Paint
+	void PaintingSquare(int width, int height) {
+		PatBlt(g_BackBufferDC, 0, 0, width, height, BLACKNESS);
+	}
+	
+	/// Draw Image
+	void Draw(Gdiplus::Bitmap* bitmap, int posX, int posY) {
+		GDIRenderer::g_pBackBufferGraphics->DrawImage(bitmap, posX, posY);
+	}
+
 	/// Renderer Render
-	void Render(int g_width, int g_height) {
-		PatBlt(g_BackBufferDC, 0, 0, g_width, g_height, BLACKNESS);
+	void Render(int width, int height) {
 		// Animation Draw
 		switch (playerState)
 		{
 		case IDLE:
-			PlayerIdleAnimation(g_width, g_height);
+			PlayerIdleAnimation(width, height);
 			break;
 		case WALK:
-			PlayerWalkAnimation(g_width, g_height);
+			PlayerWalkAnimation(width, height);
 			break;
 		case ATTACK:
-			PlayerAttackAnimation(g_width, g_height);
+			PlayerAttackAnimation(width, height);
 			break;
 		default:
 			break;
 		}
-		BitBlt(g_FrontBufferDC, 0, 0, g_width, g_height, g_BackBufferDC, 0, 0, SRCCOPY);
+	}
+
+	/// Back에 그려진 픽셀 Front로 복사
+	void DrawBackToFront(int width, int height) {
+		BitBlt(g_FrontBufferDC, 0, 0, width, height, g_BackBufferDC, 0, 0, SRCCOPY);
 	}
 
 	/// Renderer Release
