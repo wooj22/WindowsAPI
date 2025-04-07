@@ -11,7 +11,7 @@ namespace GDIRenderer {
 
 	void PaintingSquare(int width, int height);
 	void DrawBackToFront(int width, int height);
-	void Draw(Gdiplus::Bitmap* bitmap, int posX, int posY);
+	void BitmapDraw(Gdiplus::Bitmap* bitmap, int posX, int posY);
 	void Render(int width, int height);
 
 	void Release(HWND hwnd);

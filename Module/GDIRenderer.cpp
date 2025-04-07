@@ -35,35 +35,68 @@ namespace GDIRenderer {
 	float animationCycle = 0.17f;
 	int animationIndex = 0;
 
+
 	/// Player Idle Animation
 	inline void PlayerIdleAnimation(int g_width, int g_height) {
 		if (animationIndex > IDLE_SIZE - 1) animationIndex = 0;
 
-		GDIRenderer::g_pBackBufferGraphics->DrawImage(playerIdleFrames[animationIndex],
-			g_width / 2 - (int)playerIdleFrames[animationIndex]->GetWidth() / 2,
-			g_height / 2 - (int)playerIdleFrames[animationIndex]->GetHeight() / 2);
+		if (playerIdleFrames[animationIndex] == nullptr) {
+			printf("NULL\n");
+		}
+		else
+		{
+			/*GDIRenderer::g_pBackBufferGraphics->DrawImage(playerIdleFrames[animationIndex],
+				g_width / 2 - (int)playerIdleFrames[animationIndex]->GetWidth() / 2,
+				g_height / 2 - (int)playerIdleFrames[animationIndex]->GetHeight() / 2);*/
+
+			BitmapDraw(playerIdleFrames[animationIndex],
+			g_width / 2 - (int)playerWalkFrames[animationIndex]->GetWidth() / 2,
+			g_height / 2 - (int)playerWalkFrames[animationIndex]->GetHeight() / 2);
+		}
 
 		prePlayerState = playerState;
 		printf("IDLE - currentIndex [%d]\n", animationIndex);
 	}
 
+
 	/// Player Walk Animation
 	inline void PlayerWalkAnimation(int g_width, int g_height) {
 		if (animationIndex > WALK_SIZE - 1)	animationIndex = 0;
 
-		GDIRenderer::g_pBackBufferGraphics->DrawImage(playerWalkFrames[animationIndex],
+		if (playerWalkFrames[animationIndex] == nullptr) {
+			printf("NULL\n");
+		}
+		else
+		{
+			/*GDIRenderer::g_pBackBufferGraphics->DrawImage(playerWalkFrames[animationIndex],
+				g_width / 2 - (int)playerWalkFrames[animationIndex]->GetWidth() / 2,
+				g_height / 2 - (int)playerWalkFrames[animationIndex]->GetHeight() / 2);*/
+
+			BitmapDraw(playerWalkFrames[animationIndex],
 			g_width / 2 - (int)playerWalkFrames[animationIndex]->GetWidth() / 2,
 			g_height / 2 - (int)playerWalkFrames[animationIndex]->GetHeight() / 2);
+		}
 
 		prePlayerState = playerState;
 		printf("WALK - currentIndex [%d]\n", animationIndex);
 	}
 
+
 	/// Player Attack Animation
 	inline void PlayerAttackAnimation(int g_width, int g_height) {
-		GDIRenderer::g_pBackBufferGraphics->DrawImage(playerAttackFrames[animationIndex],
-			g_width / 2 - (int)playerAttackFrames[animationIndex]->GetWidth() / 2,
-			g_height / 2 - (int)playerAttackFrames[animationIndex]->GetHeight() / 2);
+		if (playerAttackFrames[animationIndex] == nullptr) {
+			printf("NULL\n");
+		}
+		else
+		{
+			/*GDIRenderer::g_pBackBufferGraphics->DrawImage(playerAttackFrames[animationIndex],
+				g_width / 2 - (int)playerAttackFrames[animationIndex]->GetWidth() / 2,
+				g_height / 2 - (int)playerAttackFrames[animationIndex]->GetHeight() / 2);*/
+
+			BitmapDraw(playerAttackFrames[animationIndex],
+			g_width / 2 - (int)playerWalkFrames[animationIndex]->GetWidth() / 2,
+			g_height / 2 - (int)playerWalkFrames[animationIndex]->GetHeight() / 2);
+		}
 
 		prePlayerState = playerState;
 		printf("ATTACK - currentIndex [%d]\n", animationIndex);
@@ -93,22 +126,22 @@ namespace GDIRenderer {
 		// Idle
 		for (int i = 0; i < IDLE_SIZE; ++i) {
 			swprintf_s(filePath, L"../Resource/PlayerAnimation/idle-%d.png", i + 1);
-			//playerIdleFrames[i] = new Gdiplus::Bitmap(filePath);
-			BitmapLoad(playerIdleFrames[i], filePath);
+			playerIdleFrames[i] = new Gdiplus::Bitmap(filePath);
+			//BitmapLoad(playerIdleFrames[i], filePath);
 		}
 
 		// Walk
 		for (int i = 0; i < WALK_SIZE; ++i) {
 			swprintf_s(filePath, L"../Resource/PlayerAnimation/walk-%d.png", i + 1);
-			//playerWalkFrames[i] = new Gdiplus::Bitmap(filePath);
-			BitmapLoad(playerWalkFrames[i], filePath);
+			playerWalkFrames[i] = new Gdiplus::Bitmap(filePath);
+			//BitmapLoad(playerWalkFrames[i], filePath);
 		}
 
 		// Attack
 		for (int i = 0; i < ATTACK_SIZE; ++i) {
 			swprintf_s(filePath, L"../Resource/PlayerAnimation/attack-A%d.png", i + 1);
-			//playerAttackFrames[i] = new Gdiplus::Bitmap(filePath);
-			BitmapLoad(playerAttackFrames[i], filePath);
+			playerAttackFrames[i] = new Gdiplus::Bitmap(filePath);
+			//BitmapLoad(playerAttackFrames[i], filePath);
 		}
 
 		// Animation ÃÊ±âÈ­
@@ -118,7 +151,7 @@ namespace GDIRenderer {
 
 	/// Image Load
 	void BitmapLoad(Gdiplus::Bitmap* bitmap, wchar_t* filePath) {
-		playerIdleFrames[0] = new Gdiplus::Bitmap(filePath);
+		bitmap = new Gdiplus::Bitmap(filePath);
 	}
 
 	/// Renderer Update
@@ -155,7 +188,7 @@ namespace GDIRenderer {
 	}
 	
 	/// Draw Image
-	void Draw(Gdiplus::Bitmap* bitmap, int posX, int posY) {
+	void BitmapDraw(Gdiplus::Bitmap* bitmap, int posX, int posY) {
 		GDIRenderer::g_pBackBufferGraphics->DrawImage(bitmap, posX, posY);
 	}
 
